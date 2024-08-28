@@ -40,9 +40,9 @@ function* deleteUser(userId){
 
         yield call(getUsers);
     }catch(e){
-        // yield put(actions.usersError({
-        //     error: 'An error occurred when trying to delete the user'
-        // }));
+        yield put(actions.usersError({
+            error: 'An error occurred when trying to delete the user'
+        }));
 	}
 }
 
