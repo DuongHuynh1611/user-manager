@@ -1,30 +1,24 @@
 import React from 'react';
-import {ListGroup,ListGroupItem} from 'reactstrap';
+import {List, Card} from 'antd';
 import UserListItem from './UserListItem';
 
-const UsersList =({users,onDeleteUserClick}) => {
+
+const UsersList =({users,onDeleteUserClick,onEditUserClick}) => {
+    
+
+    console.log(users); 
     return(
-        <ListGroup>
-            {users.sort((a,b)=>{
-                if(a.firstName>b.firstName){
-                    return 1;
-                }else if(a.firstName<b.firstName){
-                    return -1;
-                }else if(a.lastName>b.lastName){
-                    return 1;
-                }else if(a.lastName<b.lastName){
-                    return -1;
-                }else{
-                    return 0;
-                }
-            }).map((user)=>{
-                return (
-                <ListGroupItem key={user.id}>
-                    <UserListItem onDeleteClick={onDeleteUserClick} user={user}/>
-                </ListGroupItem>
+        <List.Item>
+            {users.map((user)=>{
+                return(
+                <Card key={user.id}>
+                    <UserListItem onDeleteClick={onDeleteUserClick}
+                    onEditClick={onEditUserClick}
+                    user={user}/>
+                </Card> 
                 );
             })}
-        </ListGroup>
+        </List.Item>
     )
 };
 

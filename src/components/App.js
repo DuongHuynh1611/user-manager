@@ -1,55 +1,57 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { getUsersRequest, createUserRequest,deleteUserRequest,usersError } from '../actions/users';
+import { getUsersRequest, createUserRequest,deleteUserRequest,usersError,updateUserRequest } from '../actions/users';
 import UsersList from './UsersList';
 import NewUserForm from './NewUserForm';
-import { Alert } from 'reactstrap';
+import { Alert } from 'antd';
 
-class App extends Component {
-  constructor(props){
-    super(props);
+const App=({users,getUsersRequest, createUserRequest,deleteUserRequest,usersError,updateUserRequest})=> {
 
-    this.props.getUsersRequest();
-  }
+  useEffect(() => {
+    getUsersRequest();
+  }, [getUsersRequest]);
 
-  handleCreateUserSubmit = ({firstName,lastName}) =>{
-    this.props.createUserRequest({
+  const handleCreateUserSubmit = ({firstName,lastName}) =>{
+    createUserRequest({
       firstName,
       lastName
     });
   };
 
-  handleDeleteUserClick = (userId) => {
-    this.props.deleteUserRequest(userId);
-  };
-  handleCloseAlert = () => {
-    this.props.usersError({
-        error: ''
-    });
+  const handleDeleteUserClick = (userId) => {
+    deleteUserRequest(userId);
   };
 
-  render(){
-    const users = this.props.users;
-    console.log("Users:", users.items);
-    return(
-      <div style={{margin:'0 auto',padding:'20px',maxWidth:'600px'}}>
-        <h2>
-            Users
-        </h2>
-        <Alert color="danger" isOpen={!!this.props.users.error} toggle={this.handleCloseAlert}>
-            {this.props.users.error}
-        </Alert>
-        <NewUserForm onSubmit={this.handleCreateUserSubmit}/> <hr/>
-        {!!users.items && !!users.items.length &&
-          <UsersList onDeleteUserClick={this.handleDeleteUserClick} users={users.items}/>
-        }
+  const handleEditUserClick = (userId, firstName, lastName) => {
+    updateUserRequest({ id: userId, firstName, lastName });
+    console.log(`Editing user ${userId}: ${firstName} ${lastName}`);
+}
+
+  const handleCloseAlert = () => {
+    usersError({error: ''});
+  };
+  return(
+    <div style={{margin:'0 auto',padding:'20px',maxWidth:'600px'}}>
+      <h2>
+        Users
+      </h2>
+      <Alert color="danger" isOpen={!!users.error} toggle={handleCloseAlert}>
+        {users.error}
+      </Alert>
+      <NewUserForm onSubmit={handleCreateUserSubmit}/> <hr/>
+      {!!users.items && !!users.items.length &&
+        <UsersList onDeleteUserClick={handleDeleteUserClick}
+        onEditUserClick={handleEditUserClick}
+        users={users.items}/>
+      }
       </div>
     );
-  }
-}  
+}; 
 export default connect(({users})=>({users}),{
   getUsersRequest,
   createUserRequest,
   deleteUserRequest,
-  usersError
+  usersError,
+  updateUserRequest
+  
 }) (App);

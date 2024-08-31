@@ -10,12 +10,13 @@ import rootSaga from './sagas';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css';
 
+const sagaMiddleware = createSagaMiddleware();
+
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = 'https://cors-anywhere.herokuapp.com/https://rem.dbwebb.se/api';
-axios.defaults.baseURL = 'https://rem.dbwebb.se/api';
+axios.defaults.baseURL='https://rem.dbwebb.se/api';
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const sagaMiddleware = createSagaMiddleware();
 const store =createStore(reducers,applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(rootSaga);

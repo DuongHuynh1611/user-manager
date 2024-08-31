@@ -21,17 +21,22 @@ function * watchGetUsersRequest(){
 
 function* createUser({payload}){
     try{
-        const response=  yield call(api.createUser, {
-            firstName:payload.firstName, 
-            lastName: payload.lastName}
-        );
+        yield call(api.createUser, {
+            firstName: payload.firstName,
+            lastName: payload.lastName
+        });
 
         yield call(getUsers);
-        
-        console.log("Create user response:", response);
+
     }catch(e){
-        console.error("Error creating user:", e);
+        yield put(actions.usersError({
+            error: 'An error occurred when trying to create the user'
+        }));
     }
+}
+
+function* watchCreateUserRequest(){
+    yield takeLatest(actions.Types.CREATE_USER_REQUEST, createUser);
 }
 
 function* deleteUser(userId){
@@ -46,10 +51,6 @@ function* deleteUser(userId){
 	}
 }
 
-function* watchCreateUserRequest(){
-    yield takeLatest(actions.Types.CREATE_USER_REQUEST, createUser);
-}
-
 function* watchDeleteUserRequest(){
     while(true){
         const {payload} = yield take(actions.Types.DELETE_USER_REQUEST);
@@ -57,10 +58,36 @@ function* watchDeleteUserRequest(){
     }
 }
 
+// function* updateUser({ payload }) {
+//     try {
+//         yield call(api.updateUser, payload);
+//         yield call(getUsers);
+//     } catch (e) {
+//         yield put(actions.usersError({
+//             error: 'An error occurred when trying to update the user'
+//         }));
+//     }
+// }
+function* updateUser({ payload }) {
+    try {
+        yield call(api.updateUser, payload); // payload is the whole user object
+        yield call(getUsers); // Refetch users to update the list
+    } catch (e) {
+        yield put(actions.usersError({
+            error: 'An error occurred when trying to update the user'
+        }));
+    }
+}
+
+function* watchUpdateUserRequest() {
+    yield takeLatest(actions.Types.UPDATE_USER_REQUEST, updateUser);
+}
+
 const usersSagas = [
     fork(watchGetUsersRequest),
     fork(watchCreateUserRequest),
-    fork(watchDeleteUserRequest)
+    fork(watchDeleteUserRequest),
+    fork(watchUpdateUserRequest)
 ];
 
 export default usersSagas;
